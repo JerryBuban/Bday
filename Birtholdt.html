@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Birthday Audio</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 40px 20px;
+            background: #f5f5f5;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 12px 22px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 8px;
+        }
+
+        #recordBtn {
+            background: #222;
+            color: white;
+        }
+
+        #submitBtn {
+            background: #2196f3;
+            color: white;
+            display: none;
+        }
+
+        #status {
+            margin: 20px 0;
+            font-size: 16px;
+        }
+
+        #audioPreview {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Record a Message 🎙️</h1>
+
+    <button id="recordBtn">🎙️ Record</button>
+
+    <p id="status">Press Record to start.</p>
+
+    <audio id="audioPreview" controls></audio>
+
+    <br>
+
+    <button id="submitBtn">📤 Submit</button>
+
+
+    <script>
+
+        const recordBtn = document.getElementById("recordBtn");
+        const submitBtn = document.getElementById("submitBtn");
+        const audioPreview = document.getElementById("audioPreview");
+        const status = document.getElementById("status");
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let audioBlob;
+        let audioURL;
+
+
+        recordBtn.addEventListener("click", async () => {
+
+            // START RECORDING
+            if (!mediaRecorder || mediaRecorder.state === "inactive") {
+
+                try {
+
+                    const stream =
+                        await navigator.mediaDevices.getUserMedia({
+                            audio: true
+                        });
+
+                    audioChunks = [];
+
+                    mediaRecorder = new MediaRecorder(stream);
+
+                    mediaRecorder.ondataavailable = (event) => {
+
+                        if (event.data.size > 0) {
+                            audioChunks.push(event.data);
+                        }
+
+                    };
+
+
+                    mediaRecorder.onstop = () => {
+
+                        audioBlob = new Blob(
+                            audioChunks,
+                            { type: "audio/webm" }
+                        );
+
+                        audioURL = URL.createObjectURL(audioBlob);
+
+                        audioPreview.src = audioURL;
+                        audioPreview.style.display = "block";
+
+                        submitBtn.style.display = "inline-block";
+
+                        status.textContent =
+                            "Recording finished. You can listen to it.";
+
+                    };
+
+
+                    mediaRecorder.start();
+
+                    recordBtn.textContent = "⏹️ Stop Recording";
+
+                    status.textContent = "🔴 Recording...";
+
+                    // Stop microphone access
+                    mediaRecorder.onstop = (() => {
+
+                        const originalStop = mediaRecorder.onstop;
+
+                        return () => {
+
+                            stream.getTracks().forEach(track => {
+                                track.stop();
+                            });
+
+                            audioBlob = new Blob(
+                                audioChunks,
+                                { type: "audio/webm" }
+                            );
+
+                            audioURL =
+                                URL.createObjectURL(audioBlob);
+
+                            audioPreview.src = audioURL;
+                            audioPreview.style.display = "block";
+
+                            submitBtn.style.display = "inline-block";
+
+                            status.textContent =
+                                "Recording finished. You can listen to it.";
+
+                        };
+
+                    })();
+
+                }
+
+                catch (error) {
+
+                    console.error(error);
+
+                    status.textContent =
+                        "Microphone permission was denied or unavailable.";
+
+                }
+
+            }
+
+
+            // STOP RECORDING
+            else if (mediaRecorder.state === "recording") {
+
+                mediaRecorder.stop();
+
+                recordBtn.textContent = "🎙️ Record Again";
+
+            }
+
+        });
+
+
+        // SUBMIT BUTTON
+        submitBtn.addEventListener("click", () => {
+
+            if (!audioBlob) {
+                return;
+            }
+
+            const downloadLink =
+                document.createElement("a");
+
+            downloadLink.href = audioURL;
+
+            downloadLink.download =
+                "birthday-recording.webm";
+
+            document.body.appendChild(downloadLink);
+
+            downloadLink.click();
+
+            document.body.removeChild(downloadLink);
+
+            status.textContent =
+                "✅ Recording submitted/saved!";
+
+        });
+
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://wpkxfkxdflaujxgcgnas.supabase.co";
+const SUPABASE_KEY = "sb_publishable_U4fIpKJ40XrJ6-zCMtdYPQ_v2Kr3Mut
+"; 
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+</script>
+</body>
+</html>
