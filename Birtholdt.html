@@ -200,13 +200,31 @@
     const fileName =
         `greeting_${Date.now()}.webm`;
 
-    const { error: uploadError } =
-        await supabaseClient
-            .storage
-            .from("greetings")
-            .upload(fileName, audioBlob, {
-                contentType: audioBlob.type || "audio/webm"
-            });
+    const uploadPromise = supabaseClient
+    .storage
+    .from("greetings")
+    .upload(fileName, audioBlob, {
+        contentType: audioBlob.type || "audio/webm"
+    });
+
+const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("Upload timed out")), 10000)
+);
+
+let uploadResult;
+
+try {
+    uploadResult = await Promise.race([
+        uploadPromise,
+        timeoutPromise
+    ]);
+} catch (error) {
+    console.error(error);
+    status.textContent = "❌ " + error.message;
+    return;
+}
+
+const { error: uploadError } = uploadResult;
 
     if (uploadError) {
         console.error(uploadError);
