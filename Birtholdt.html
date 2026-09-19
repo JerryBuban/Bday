@@ -66,7 +66,18 @@
 
     <button id="submitBtn">📤 Submit</button>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+const SUPABASE_URL = "https://wpkxfkxdflaujxgcgnas.supabase.co";
+const SUPABASE_KEY = "sb_publishable_U4fIpKJ40XrJ6-zCMtdYPQ_v2Kr3Mut"; 
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+</script>
+    
     <script>
 
         const recordBtn = document.getElementById("recordBtn");
@@ -252,17 +263,64 @@ const { error: uploadError } = uploadResult;
         "✅ Greeting submitted!";
 
 });
+        const greetingsList = document.getElementById("greetingsList");
+
+async function loadGreetings() {
+
+    const { data, error } = await supabaseClient
+        .from("greetings")
+        .select("audio_path")
+        .order("id", { ascending: true });
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    greetingsList.innerHTML = "";
+
+    data.forEach((greeting, index) => {
+
+        const container = document.createElement("div");
+
+        const title = document.createElement("h3");
+        title.textContent =
+            `🎙️ ${index + 1}${getOrdinal(index + 1)} Greeting`;
+
+        const audio = document.createElement("audio");
+        audio.controls = true;
+
+        const { data: publicURL } =
+            supabaseClient
+                .storage
+                .from("greetings")
+                .getPublicUrl(greeting.audio_path);
+
+        audio.src = publicURL.publicUrl;
+
+        container.appendChild(title);
+        container.appendChild(audio);
+
+        greetingsList.appendChild(container);
+    });
+}
+
+function getOrdinal(number) {
+
+    if (number % 100 >= 11 && number % 100 <= 13) {
+        return "th";
+    }
+
+    switch (number % 10) {
+        case 1: return "st";
+        case 2: return "nd";
+        case 3: return "rd";
+        default: return "th";
+    }
+}
+
+loadGreetings();
     </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script>
-const SUPABASE_URL = "https://wpkxfkxdflaujxgcgnas.supabase.co";
-const SUPABASE_KEY = "sb_publishable_U4fIpKJ40XrJ6-zCMtdYPQ_v2Kr3Mut"; 
-
-const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-</script>
 </body>
 </html>
