@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Birthday Audio</title>
-<div id="greetingsList"></div>
+    <title>Audio Messages</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -50,6 +49,54 @@
             margin: 20px auto;
         }
     </style>
+    <style>
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+        color: #eef2ff;
+        background:
+            radial-gradient(circle at 50% 0%, #1d2a52 0%, #0b1224 45%, #060b16 100%);
+        padding: 40px 20px;
+        box-sizing: border-box;
+    }
+
+    body > * {
+        box-sizing: border-box;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: clamp(2.2rem, 7vw, 4rem);
+        margin: 20px 0 35px;
+        color: #f5f7ff;
+    }
+
+    #greetingsList {
+        max-width: 760px;
+        margin: 35px auto;
+    }
+
+    #greetingsList > div {
+        background: rgba(18, 29, 55, 0.75);
+        border: 1px solid rgba(120, 145, 210, 0.25);
+        border-radius: 18px;
+        padding: 18px 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    #greetingsList h3 {
+        margin: 0 0 12px;
+        font-size: 1.05rem;
+        color: #dce5ff;
+    }
+
+    #greetingsList audio {
+        width: 100%;
+        height: 42px;
+    }
+    </style>
 </head>
 
 <body>
@@ -66,6 +113,8 @@
 
     <button id="submitBtn">📤 Submit</button>
 
+    <div id="greetingsList"></div>
+    
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
