@@ -189,31 +189,50 @@
 
 
         // SUBMIT BUTTON
-        submitBtn.addEventListener("click", () => {
+        submitBtn.addEventListener("click", async () => {
 
-            if (!audioBlob) {
-                return;
-            }
+    if (!audioBlob) {
+        return;
+    }
 
-            const downloadLink =
-                document.createElement("a");
+    status.textContent = "⏳ Uploading greeting...";
 
-            downloadLink.href = audioURL;
+    const fileName =
+        `greeting_${Date.now()}.webm`;
 
-            downloadLink.download =
-                "birthday-recording.webm";
+    const { error: uploadError } =
+        await supabaseClient
+            .storage
+            .from("greetings")
+            .upload(fileName, audioBlob, {
+                contentType: audioBlob.type || "audio/webm"
+            });
 
-            document.body.appendChild(downloadLink);
+    if (uploadError) {
+        console.error(uploadError);
+        status.textContent =
+            "❌ Upload failed. Check the console.";
+        return;
+    }
 
-            downloadLink.click();
+    const { error: databaseError } =
+        await supabaseClient
+            .from("greetings")
+            .insert({
+                audio_path: fileName
+            });
 
-            document.body.removeChild(downloadLink);
+    if (databaseError) {
+        console.error(databaseError);
+        status.textContent =
+            "❌ Recording uploaded, but saving failed.";
+        return;
+    }
 
-            status.textContent =
-                "✅ Recording submitted/saved!";
+    status.textContent =
+        "✅ Greeting submitted!";
 
-        });
-
+});
     </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
