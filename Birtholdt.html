@@ -101,7 +101,7 @@
 
 <body>
 
-    <h1>Record a Message 🎙️</h1>
+    <h1>Record a Message </h1>
 
     <button id="recordBtn">🎙️ Record</button>
 
@@ -255,7 +255,7 @@ const supabaseClient = supabase.createClient(
         return;
     }
 
-    status.textContent = "⏳ Uploading greeting...";
+    status.textContent = "⏳ Uploading Message...";
 
     const fileName =
         `greeting_${Date.now()}.webm`;
@@ -309,7 +309,7 @@ const { error: uploadError } = uploadResult;
     }
 
     status.textContent =
-        "✅ Greeting submitted!";
+        "✅ Message submitted!";
 
 });
         const greetingsList = document.getElementById("greetingsList");
@@ -334,7 +334,7 @@ async function loadGreetings() {
 
         const title = document.createElement("h3");
         title.textContent =
-            `🎙️ ${index + 1}${getOrdinal(index + 1)} Greeting`;
+            `🎙️ ${index + 1}${getOrdinal(index + 1)} Message`;
 
         const audio = document.createElement("audio");
         audio.controls = true;
