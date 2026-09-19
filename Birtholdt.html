@@ -211,7 +211,8 @@
     if (uploadError) {
         console.error(uploadError);
         status.textContent =
-            "❌ Upload failed. Check the console.";
+            "❌" +
+            uploadError.message ;
         return;
     }
 
